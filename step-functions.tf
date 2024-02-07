@@ -1,17 +1,17 @@
 resource "aws_sfn_state_machine" "validation" {
 
-  name = "MyStateMachine-r4vhmkgsv"
+  name = "VAT-Validation"
 
   definition = jsonencode(
     {
       Comment = "A description of my state machine"
       StartAt = "Is_GB"
       States = {
-        HRMC = {
+        HMRC = {
           End        = true
           OutputPath = "$.Payload"
           Parameters = {
-            FunctionName = "arn:aws:lambda:eu-central-1:547989225539:function:vat-validate-hrmc:$LATEST"
+            FunctionName = "arn:aws:lambda:eu-central-1:547989225539:function:vat-validate-hmrc:$LATEST"
             "Payload.$"  = "$"
           }
           Resource = "arn:aws:states:::lambda:invoke"
@@ -33,7 +33,7 @@ resource "aws_sfn_state_machine" "validation" {
         Is_GB = {
           Choices = [
             {
-              Next          = "HRMC"
+              Next          = "HMRC"
               StringMatches = "GB*"
               Variable      = "$.vat"
             },

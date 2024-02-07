@@ -15,7 +15,7 @@ resource "aws_cloudwatch_log_group" "validate-vies" {
 }
 
 
-resource "aws_cloudwatch_log_group" "validate-hrmc" {
-  name              = "/aws/lambda/${aws_lambda_function.hrmc.function_name}"
+resource "aws_cloudwatch_log_group" "validate-hmrc" {
+  name              = "/aws/lambda/${aws_lambda_function.hmrc.function_name}"
   retention_in_days = 14
 }
