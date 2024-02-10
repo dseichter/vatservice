@@ -21,21 +21,44 @@ def defaultencode(o):
         return fakefloat(o)
     raise TypeError(repr(o) + " is not JSON serializable")
 
+def return_fielderror(fieldname):
+    return {
+            'statusCode': 406,
+            'body': json.dumps({'errorcode': 'VAT0001', 'message': f"The following field is missing: {fieldname}"}, default=defaultencode)
+        }
+
 def lambda_handler(event, context):
     
-    # example
-    input_dict = {'key': 'value', 'vat': 'DE1234567890'}
-    # read the values from the payload
+    payload = event['body']
 
-    # check, if request is valid
-    
-    
+    if not 'key1' in payload:
+        return return_fielderror('key1')
+    if not 'key2' in payload:
+        return return_fielderror('key2')
+    if not 'ownvat' in payload:
+        return return_fielderror('ownvat')
+    if not 'foreignvat' in payload:
+        return return_fielderror('foreignvat')
+    if not 'company' in payload:
+        return return_fielderror('company')
+    if not 'town' in payload:
+        return return_fielderror('town')
+    if not 'zip' in payload:
+        return return_fielderror('zip')
+    if not 'street' in payload:
+        return return_fielderror('street')
+
     # trigger stepfunction
     try:
-        response = sf.start_execution(
+        response = sf.start_sync_execution(
             stateMachineArn = STEPFUNCTION,
-            input = json.dumps(input_dict)
+            name=payload['foreignvat'],
+            input = json.dumps(payload)
         )
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'status': 'ok', 'data': 'test'}, default=defaultencode)
+        }
     except Exception as e:
         print(repr(e))
 

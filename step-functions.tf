@@ -35,7 +35,7 @@ resource "aws_sfn_state_machine" "validation" {
             {
               Next          = "HMRC"
               StringMatches = "GB*"
-              Variable      = "$.vat"
+              Variable      = "$.foreignvat"
             },
           ]
           Default = "Parallel"
@@ -108,12 +108,13 @@ resource "aws_sfn_state_machine" "validation" {
   )
   publish  = false
   role_arn = "arn:aws:iam::547989225539:role/service-role/StepFunctions-MyStateMachine-r4vhmkgsv-role-kqp3ntjb5"
-  type     = "STANDARD"
+  type     = "EXPRESS"
 
-  logging_configuration {
-    include_execution_data = false
-    level                  = "OFF"
-  }
+  # logging_configuration {
+  #   log_destination        = "${aws_cloudwatch_log_group.step-functions.arn}:*"
+  #   include_execution_data = true
+  #   level                  = "ERROR"
+  # }
 
   tracing_configuration {
     enabled = false

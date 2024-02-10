@@ -19,3 +19,8 @@ resource "aws_cloudwatch_log_group" "validate-hmrc" {
   name              = "/aws/lambda/${aws_lambda_function.hmrc.function_name}"
   retention_in_days = 14
 }
+
+resource "aws_cloudwatch_log_group" "step-functions" {
+  name              = "/aws/vendedlogs/states/VAT-Validation"
+  retention_in_days = 14
+}
