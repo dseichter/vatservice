@@ -110,11 +110,11 @@ resource "aws_sfn_state_machine" "validation" {
   role_arn = "arn:aws:iam::547989225539:role/service-role/StepFunctions-MyStateMachine-r4vhmkgsv-role-kqp3ntjb5"
   type     = "EXPRESS"
 
-  # logging_configuration {
-  #   log_destination        = "${aws_cloudwatch_log_group.step-functions.arn}:*"
-  #   include_execution_data = true
-  #   level                  = "ERROR"
-  # }
+  logging_configuration {
+    log_destination        = "${aws_cloudwatch_log_group.step-functions.arn}:*"
+    include_execution_data = true
+    level                  = "ALL"
+  }
 
   tracing_configuration {
     enabled = false
