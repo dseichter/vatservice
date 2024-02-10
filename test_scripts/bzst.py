@@ -5,12 +5,13 @@ import json
 http = urllib3.PoolManager()
 
 URL = 'https://evatr.bff-online.de/evatrRPC'
-OWNVAT='DE1234567890'
-FOREIGNVAT=''
-COMPANY='Übungsfirma'
-TOWN=''
-ZIP=''
-STREET=''
+TYPE='BZST'
+OWNVAT='DE323410633'
+FOREIGNVAT='ATU72811148'
+COMPANY='Barbaric GmbH'
+TOWN='Linz'
+ZIP='4020'
+STREET='Pummererstraße 12'
 
 requestfields = {
   'UstId_1':OWNVAT,
@@ -30,7 +31,6 @@ def getText(nodelist):
 
 try:
     resp = http.request("GET", URL, fields=requestfields)
-    #print(resp.data)
 
     dom = minidom.parseString(resp.data)
 
@@ -54,6 +54,29 @@ try:
                 newvalue=getText(string.childNodes)
                 rc[newkey]= newvalue
     print(json.dumps(rc, indent=2))
+
+
+    validationresult = {
+        'key1': '',
+        'key2': '',
+        'ownvat': OWNVAT,
+        'foreignvat': FOREIGNVAT,
+        'type': TYPE,
+        'valid': rc['ErrorCode'] in ['200', '216'],
+        'errorcode': rc['ErrorCode'],
+        'errorcode_description': '',
+        'valid_from': rc['Gueltig_ab'],
+        'valid_to': rc['Gueltig_bis'],
+        'errorcode_hint': '',
+        'timestamp': rc['Datum'] + ' ' + rc['Uhrzeit'],
+        'company': rc['Firmenname'],
+        'address': '',
+        'town': rc['Ort'],
+        'zip':  rc['ErrorCode'],
+        'street': rc['Strasse']
+    }
+
+    print(json.dumps(validationresult, indent=2))
 
 except Exception as e:
     print(repr(e))

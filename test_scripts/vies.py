@@ -8,6 +8,7 @@ import json
 http = urllib3.PoolManager()
 
 URL = 'https://ec.europa.eu/taxation_customs/vies/services/checkVatService'
+TYPE='VIES'
 OWNVAT='DE323410633'
 FOREIGNVAT='IT01739710307'
 COMPANY=''
@@ -60,6 +61,27 @@ try:
 
     print(result)
 
+    # bring result in right format
+    validationresult = {
+        'key1': '',
+        'key2': '',
+        'ownvat': OWNVAT,
+        'foreignvat': FOREIGNVAT,
+        'type': TYPE,
+        'valid': result['valid'],
+        'errorcode': '',
+        'errorcode_description': '',
+        'valid_from': '',
+        'valid_to': '',
+        'errorcode_hint': '',
+        'timestamp': result['requestDate'],
+        'company': result['traderName'],
+        'address': result['traderAddress'],
+        'town': '',
+        'zip': '',
+        'street': ''
+    }
+    print(json.dumps(validationresult, indent=2))
     
 except Exception as e:
     print(repr(e))
