@@ -21,6 +21,12 @@ paths:
           $ref: '#/components/responses/200Ok'
         '400':
           $ref: '#/components/responses/400Error'
+        '429':
+          $ref: '#/components/responses/429Error'          
+        '500':
+          $ref: '#/components/responses/500Error'          
+        '504':
+          $ref: '#/components/responses/504Error'              
 
 components:
   schemas:
@@ -57,6 +63,8 @@ components:
       required:
         - ownvat
         - foreignvat
+        - validationtype
+        - valid
       properties:
         key1: 
           type: string
@@ -66,7 +74,7 @@ components:
           type: string
         foreignvat: 
           type: string
-        type: 
+        validationtype: 
           type: string
         valid: 
           type: boolean
@@ -92,6 +100,15 @@ components:
           type: string
         street: 
           type: string
+    
+    error_schema:
+      type: object
+      properties:
+        errorcode:
+          type: string
+        errormessage:
+          type: string
+    
 
   responses:
     200Ok:
@@ -105,10 +122,24 @@ components:
       content:
         application/json:
           schema:
-            type: object 
-            properties:
-              errorcode:
-                type: string
-              errormessage:
-                type: string
+            $ref: '#/components/schemas/error_schema'
+    429Error:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'            
+    500Error:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'
+    504Error:
+      description: Gateway timeout
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'                     
+
   
