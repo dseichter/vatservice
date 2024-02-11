@@ -1,0 +1,114 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://api.vatservice.net
+
+
+paths:
+  /v1/validate:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/validate_request'
+      responses:
+        '200':
+          description: Ok
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400Error'
+
+components:
+  schemas:
+    validate_request:
+      type: object
+      required:
+        - ownvat
+        - foreignvat
+      properties:
+        key1:
+          type: string
+        key2:
+          type: string
+        ownvat:
+          type: string
+        foreignvat:
+          type: string
+        company:
+          type: string
+        town:
+          type: string
+        zip:
+          type: string
+        street:
+          type: string
+        validationtype:
+          type: string
+          enum:
+            - vies
+            - bzst
+            - hmrc
+    validate_response:
+      type: object
+      required:
+        - ownvat
+        - foreignvat
+      properties:
+        key1: 
+          type: string
+        key2: 
+          type: string
+        ownvat: 
+          type: string
+        foreignvat: 
+          type: string
+        type: 
+          type: string
+        valid: 
+          type: boolean
+        errorcode: 
+          type: string
+        errorcode_description: 
+          type: string
+        valid_from: 
+          type: string
+        valid_to: 
+          type: string
+        errorcode_hint: 
+          type: string
+        timestamp: 
+          type: string
+        company: 
+          type: string
+        address: 
+          type: string
+        town: 
+          type: string
+        zip: 
+          type: string
+        street: 
+          type: string
+
+  responses:
+    200Ok:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/validate_response'
+    400Error:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object 
+            properties:
+              errorcode:
+                type: string
+              errormessage:
+                type: string
+  
