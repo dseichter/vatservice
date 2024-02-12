@@ -29,7 +29,8 @@ def return_fielderror(fieldname):
 
 def lambda_handler(event, context):
     
-    payload = event['body']
+    print(event)
+    payload = json.loads(event['body'])
 
     if not 'key1' in payload:
         return return_fielderror('key1')
@@ -47,6 +48,9 @@ def lambda_handler(event, context):
         return return_fielderror('zip')
     if not 'street' in payload:
         return return_fielderror('street')
+    
+    if not 'type' in payload:
+        payload['type'] = 'bzst' if payload['ownvat'].upper()[:2] == 'DE' else 'vies'
 
     # trigger stepfunction
     try:
@@ -55,14 +59,18 @@ def lambda_handler(event, context):
             name=payload['foreignvat'],
             input = json.dumps(payload)
         )
+        print(response)
+        result = {
+            'status': 'ok' if response['status'] == 'SUCCEEDED' else 'error',
+            'data': json.loads(response['output'])
+        }
         return {
             'statusCode': 200,
-            'body': json.dumps({'status': 'ok', 'data': 'test'}, default=defaultencode)
+            'body': json.dumps(result, default=defaultencode)
         }
     except Exception as e:
         print(repr(e))
-
-    return {
-            'statusCode': 200,
-            'body': json.dumps({'status': 'ok', 'data': 'test'}, default=defaultencode)
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'status': 'error', 'data': 'test'}, default=defaultencode)
         }

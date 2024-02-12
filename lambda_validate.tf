@@ -1,6 +1,6 @@
 resource "aws_iam_role" "vat_validate" {
   name               = "vat_validate"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.assume_role_lambda.json
 }
 
 data "archive_file" "lambda_validate" {
@@ -65,7 +65,7 @@ resource "aws_iam_policy" "iam_policy_vat_service" {
         },
         {
           Action = [
-            "states:StartExecution"
+            "states:StartSyncExecution"
           ]
           Effect = "Allow"
           Resource = [

@@ -1,6 +1,6 @@
 resource "aws_iam_role" "hmrc" {
   name               = "vat_validate_hmrc"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.assume_role_lambda.json
 }
 
 data "archive_file" "hmrc" {
