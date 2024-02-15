@@ -65,12 +65,12 @@ def lambda_handler(event, context):
             'data': json.loads(response['output'])
         }
         return {
-            'statusCode': 200,
-            'body': json.dumps(result, default=defaultencode)
+            'statusCode': 200 if result['status'] == 'ok' else 400,
+            'body': json.dumps(result['data'], default=defaultencode)
         }
     except Exception as e:
         print(repr(e))
         return {
             'statusCode': 500,
-            'body': json.dumps({'status': 'error', 'data': 'test'}, default=defaultencode)
+            'body': json.dumps({'status': 'error', 'message': repr(e)}, default=defaultencode)
         }

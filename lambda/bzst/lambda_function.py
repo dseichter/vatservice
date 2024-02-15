@@ -38,8 +38,22 @@ def lambda_handler(event, context):
     # check against HRMC
 
     # store result back in DynamoDB
-
     return {
-            'statusCode': 200,
-            'body': json.dumps({'status': 'ok', 'data': 'bzst'}, default=defaultencode)
-        }
+    "key1": "string",
+    "key2": "string",
+    "ownvat": "string",
+    "foreignvat": "string",
+    "validationtype": "bzst",
+    "valid": True,
+    "errorcode": "string",
+    "errorcode_description": "string",
+    "valid_from": "string",
+    "valid_to": "string",
+    "errorcode_hint": "string",
+    "timestamp": "string",
+    "company": "string",
+    "address": "string",
+    "town": "string",
+    "zip": "string",
+    "street": "string"
+    }
