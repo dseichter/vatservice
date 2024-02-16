@@ -1,7 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Attr
 import json
-from datetime import date
+import datetime
 from decimal import Decimal
 import os
 
@@ -19,6 +19,8 @@ def defaultencode(o):
     if isinstance(o, Decimal):
         # Subclass float with custom repr?
         return fakefloat(o)
+    if isinstance(o, (datetime.datetime, datetime.date)):
+        return o.isoformat()    
     raise TypeError(repr(o) + " is not JSON serializable")
 
 def return_fielderror(fieldname):
@@ -62,7 +64,7 @@ def lambda_handler(event, context):
         print(response)
         result = {
             'status': 'ok' if response['status'] == 'SUCCEEDED' else 'error',
-            'data': json.loads(response['output'])
+            'data': json.loads(response['output']) if 'output' in response else response
         }
         return {
             'statusCode': 200 if result['status'] == 'ok' else 400,

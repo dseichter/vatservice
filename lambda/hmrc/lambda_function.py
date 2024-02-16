@@ -1,50 +1,29 @@
 import boto3
 from boto3.dynamodb.conditions import Attr
 import json
-from datetime import date
+import datetime
 from decimal import Decimal
 import os
+import urllib3
+from xml.dom import minidom
+import json
 
+http = urllib3.PoolManager()
 
 TABLENAME=os.environ['DYNAMODB']
+URL = os.environ['URL']
+TYPE = os.environ['TYPE']
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
 
-
-class fakefloat(float):
-    def __init__(self, value):
-        self._value = value
-    def __repr__(self):
-        return str(self._value)
-
-def defaultencode(o):
-    if isinstance(o, Decimal):
-        # Subclass float with custom repr?
-        return fakefloat(o)
-    raise TypeError(repr(o) + " is not JSON serializable")
-
-def lambda_handler(event, context):
-
-    print(event)
-    # read the values from the payload
-
-    # check, if there is valid history of the vat
-
-    # check against BZST
-
-    # check against VIES
-
-    # check against HRMC
-
-    # store result back in DynamoDB
-    return {
+validationresult = {
     "key1": "string",
     "key2": "string",
     "ownvat": "string",
     "foreignvat": "string",
     "validationtype": "hrmc",
-    "valid": True,
+    "valid": None,
     "errorcode": "string",
     "errorcode_description": "string",
     "valid_from": "string",
@@ -56,4 +35,57 @@ def lambda_handler(event, context):
     "town": "string",
     "zip": "string",
     "street": "string"
-    }
+}
+
+class fakefloat(float):
+    def __init__(self, value):
+        self._value = value
+    def __repr__(self):
+        return str(self._value)
+
+def defaultencode(o):
+    if isinstance(o, Decimal):
+        # Subclass float with custom repr?
+        return fakefloat(o)
+    if isinstance(o, (datetime.datetime, datetime.date)):
+        return o.isoformat()
+    raise TypeError(repr(o) + " is not JSON serializable")
+
+def lambda_handler(event, context):
+
+    print(event)
+    requestfields = event
+    # read the values from the payload
+
+    # check, if there is valid history of the vat
+
+    try:
+        resp = http.request("GET", URL + requestfields['foreignvat'][2:])
+        print(resp.status, resp.data)
+        result = json.loads(resp.data)
+        # example response:
+        # {"target":{"name":"DEUTSCHE BANK AG LONDON","vatNumber":"243609761","address":{"line1":"21 MOORFIELDS","line2":"LONDON","postcode":"EC2Y 9DB","countryCode":"GB"}},"processingDate":"2024-02-09T20:30:07+00:00"}'
+        # bring result in right format
+        validationresult = {
+            'key1': '',
+            'key2': '',
+            'ownvat': requestfields['ownvat'],
+            'foreignvat': requestfields['foreignvat'],
+            'type': TYPE,
+            'valid': resp.status == '200',
+            'errorcode': '',
+            'errorcode_description': '',
+            'valid_from': '',
+            'valid_to': '',
+            'errorcode_hint': '',
+            'timestamp': result['processingDate'],
+            'company': result['target']['name'],
+            'address': result['target']['address']['line1'] + chr(13) + result['target']['address']['line2'],
+            'town': '',
+            'zip':  result['target']['address']['postcode'],
+            'street': ''
+        }
+        # store result back in DynamoDB
+        return validationresult
+    except Exception as e:
+        return repr(e)

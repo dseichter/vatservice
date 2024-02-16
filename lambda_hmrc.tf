@@ -29,6 +29,8 @@ resource "aws_lambda_function" "hmrc" {
   environment {
     variables = {
       DYNAMODB = aws_dynamodb_table.ew_validation_service.id
+      URL      = "https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/"
+      TYPE     = "HMRC"
     }
   }
 

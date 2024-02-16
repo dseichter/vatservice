@@ -29,6 +29,8 @@ resource "aws_lambda_function" "vies" {
   environment {
     variables = {
       DYNAMODB = aws_dynamodb_table.ew_validation_service.id
+      URL      = "https://ec.europa.eu/taxation_customs/vies/services/checkVatService"
+      TYPE     = "VIES"
     }
   }
 
