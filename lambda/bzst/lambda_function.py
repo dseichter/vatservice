@@ -97,8 +97,8 @@ def lambda_handler(event, context):
         validationresult = {
             'key1': '',
             'key2': '',
-            'ownvat': OWNVAT,
-            'foreignvat': FOREIGNVAT,
+            'ownvat': requestfields['ownvat'],
+            'foreignvat': requestfields['foreignvat'],
             'type': TYPE,
             'valid': rc['ErrorCode'] in ['200', '216'],
             'errorcode': rc['ErrorCode'],
