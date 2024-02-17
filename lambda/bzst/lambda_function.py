@@ -18,23 +18,23 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
 
 validationresult = {
-    "key1": "string",
-    "key2": "string",
-    "ownvat": "string",
-    "foreignvat": "string",
+    "key1": None,
+    "key2": None,
+    "ownvat": None,
+    "foreignvat": None,
     "validationtype": "hrmc",
     "valid": None,
-    "errorcode": "string",
-    "errorcode_description": "string",
-    "valid_from": "string",
-    "valid_to": "string",
-    "errorcode_hint": "string",
-    "timestamp": "string",
-    "company": "string",
-    "address": "string",
-    "town": "string",
-    "zip": "string",
-    "street": "string"
+    "errorcode": None,
+    "errorcode_description": None,
+    "valid_from": None,
+    "valid_to": None,
+    "errorcode_hint": None,
+    "timestamp": None,
+    "company": None,
+    "address": None,
+    "town": None,
+    "zip": None,
+    "street": None
 }
 
 class fakefloat(float):
@@ -116,5 +116,5 @@ def lambda_handler(event, context):
 
         # store result back in DynamoDB
         return validationresult
-    except:
-            return validationresult
+    except Exception as e:
+        return {'vatError': 'VAT3500', 'vatErrorMessage': repr(e)}

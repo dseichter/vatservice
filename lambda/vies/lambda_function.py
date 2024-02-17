@@ -18,23 +18,23 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
 
 validationresult = {
-    "key1": "string",
-    "key2": "string",
-    "ownvat": "string",
-    "foreignvat": "string",
+    "key1": None,
+    "key2": None,
+    "ownvat": None,
+    "foreignvat": None,
     "validationtype": "hrmc",
     "valid": None,
-    "errorcode": "string",
-    "errorcode_description": "string",
-    "valid_from": "string",
-    "valid_to": "string",
-    "errorcode_hint": "string",
-    "timestamp": "string",
-    "company": "string",
-    "address": "string",
-    "town": "string",
-    "zip": "string",
-    "street": "string"
+    "errorcode": None,
+    "errorcode_description": None,
+    "valid_from": None,
+    "valid_to": None,
+    "errorcode_hint": None,
+    "timestamp": None,
+    "company": None,
+    "address": None,
+    "town": None,
+    "zip": None,
+    "street": None
 }
 
 HEADERS= {
@@ -76,7 +76,6 @@ def lambda_handler(event, context):
     
     try:
         resp = http.request("POST", URL, headers=HEADERS, body=payload)
-        #print(resp.status, resp.data)
 
         # example response:
         # <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Header/><env:Body><ns2:checkVatApproxResponse xmlns:ns2="urn:ec.europa.eu:taxud:vies:services:checkVat:types"><ns2:countryCode>IT</ns2:countryCode><ns2:vatNumber>01739710307</ns2:vatNumber><ns2:requestDate>2024-02-09+01:00</ns2:requestDate><ns2:valid>false</ns2:valid><ns2:traderName></ns2:traderName><ns2:traderCompanyType>---</ns2:traderCompanyType><ns2:traderAddress></ns2:traderAddress><ns2:requestIdentifier></ns2:requestIdentifier></ns2:checkVatApproxResponse></env:Body></env:Envelope>'
@@ -101,8 +100,6 @@ def lambda_handler(event, context):
         except:
             result['requestDate'] = None
 
-        print(result)
-
         # bring result in right format
         validationresult = {
             'key1': '',
@@ -123,7 +120,6 @@ def lambda_handler(event, context):
             'zip': '',
             'street': ''
         }
-        print(json.dumps(validationresult, indent=2))
-        
+        return validationresult
     except Exception as e:
-        print(repr(e))
+        return {'vatError': 'VAT1500', 'vatErrorMessage': repr(e)}

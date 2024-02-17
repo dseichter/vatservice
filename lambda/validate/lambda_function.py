@@ -62,17 +62,26 @@ def lambda_handler(event, context):
             input = json.dumps(payload)
         )
         print(response)
-        result = {
-            'status': 'ok' if response['status'] == 'SUCCEEDED' else 'error',
-            'data': json.loads(response['output']) if 'output' in response else response
-        }
-        return {
-            'statusCode': 200 if result['status'] == 'ok' else 400,
-            'body': json.dumps(result['data'], default=defaultencode)
-        }
+        if response['status'] == 'SUCCEEDED' and 'output' in response:
+            result = json.loads(response['output'])
+            if 'vatError' not in result:
+                return {
+                    'statusCode': 200,
+                    'body': response['output']
+                }
+            else:
+                return {
+                    'statusCode': 500,
+                    'body': response['output']
+                } 
+        else:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'errorcode':'EW400', 'errormessage': response})
+            }
     except Exception as e:
         print(repr(e))
         return {
             'statusCode': 500,
-            'body': json.dumps({'status': 'error', 'message': repr(e)}, default=defaultencode)
+            'body': json.dumps({'errorcode':'EW500', 'errormessage': repr(e)}, default=defaultencode)
         }
