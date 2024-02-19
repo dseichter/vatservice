@@ -22,7 +22,7 @@ validationresult = {
     "key2": None,
     "ownvat": None,
     "foreignvat": None,
-    "validationtype": "hrmc",
+    "validationtype": TYPE,
     "valid": None,
     "errorcode": None,
     "errorcode_description": None,
