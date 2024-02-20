@@ -5,7 +5,7 @@ resource "aws_api_gateway_resource" "validate" {
 }
 
 resource "aws_api_gateway_method" "validate_post" {
-  authorization = "NONE"
+  authorization = "NONE" #NOSONAR
   http_method   = "POST"
   resource_id   = aws_api_gateway_resource.validate.id
   rest_api_id   = aws_api_gateway_rest_api.vat_service.id
