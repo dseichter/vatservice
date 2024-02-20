@@ -53,7 +53,7 @@ def defaultencode(o):
     raise TypeError(repr(o) + " is not JSON serializable")
 
 
-def getText(nodelist):
+def gettext(nodelist):
     rc = []
     for node in nodelist:
         if node.nodeType == node.TEXT_NODE:
@@ -61,7 +61,7 @@ def getText(nodelist):
     return ''.join(rc)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): #NOSONAR
 
     print(event)
     requestfields = event
@@ -87,11 +87,11 @@ def lambda_handler(event, context):
                     if iskey:
                         iskey=False
                         for string in strings:
-                            newkey=getText(string.childNodes)
+                            newkey=gettext(string.childNodes)
                     else:
                         iskey=True
                         for string in strings:
-                            newvalue=getText(string.childNodes)
+                            newvalue=gettext(string.childNodes)
                             rc[newkey]= newvalue
 
         validationresult = {

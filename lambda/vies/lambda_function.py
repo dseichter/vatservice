@@ -55,7 +55,7 @@ def defaultencode(o):
         return o.isoformat()    
     raise TypeError(repr(o) + " is not JSON serializable")
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): #NOSONAR
 
     print(event)
     requestfields = event
@@ -85,19 +85,19 @@ def lambda_handler(event, context):
         result = {}
         try:
             result['traderName'] = node.getElementsByTagName('ns2:traderName')[0].childNodes[0].nodeValue
-        except:
+        except KeyError as e:
             result['traderName'] = None
         try:
             result['traderAddress'] = node.getElementsByTagName('ns2:traderAddress')[0].childNodes[0].nodeValue
-        except:
+        except KeyError as e:
             result['traderAddress'] = None
         try:
             result['valid'] = node.getElementsByTagName('ns2:valid')[0].childNodes[0].nodeValue
-        except:
+        except KeyError as e:
             result['valid'] = None
         try:
             result['requestDate'] = node.getElementsByTagName('ns2:requestDate')[0].childNodes[0].nodeValue
-        except:
+        except KeyError as e:
             result['requestDate'] = None
 
         # bring result in right format

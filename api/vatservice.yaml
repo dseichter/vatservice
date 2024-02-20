@@ -22,11 +22,11 @@ paths:
         '400':
           $ref: '#/components/responses/400Error'
         '429':
-          $ref: '#/components/responses/429Error'          
+          $ref: '#/components/responses/429Error'
         '500':
-          $ref: '#/components/responses/500Error'          
+          $ref: '#/components/responses/500Error'
         '504':
-          $ref: '#/components/responses/504Error'              
+          $ref: '#/components/responses/504Error'
 
 components:
   schemas:
@@ -66,41 +66,41 @@ components:
         - validationtype
         - valid
       properties:
-        key1: 
+        key1:
           type: string
-        key2: 
+        key2:
           type: string
-        ownvat: 
+        ownvat:
           type: string
-        foreignvat: 
+        foreignvat:
           type: string
-        validationtype: 
+        validationtype:
           type: string
-        valid: 
+        valid:
           type: boolean
-        errorcode: 
+        errorcode:
           type: string
-        errorcode_description: 
+        errorcode_description:
           type: string
-        valid_from: 
+        valid_from:
           type: string
-        valid_to: 
+        valid_to:
           type: string
-        errorcode_hint: 
+        errorcode_hint:
           type: string
-        timestamp: 
+        timestamp:
           type: string
-        company: 
+        company:
           type: string
-        address: 
+        address:
           type: string
-        town: 
+        town:
           type: string
-        zip: 
+        zip:
           type: string
-        street: 
+        street:
           type: string
-    
+
     error_schema:
       type: object
       properties:
@@ -108,7 +108,6 @@ components:
           type: string
         errormessage:
           type: string
-    
 
   responses:
     200Ok:
@@ -128,7 +127,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error_schema'            
+            $ref: '#/components/schemas/error_schema'
     500Error:
       description: Invalid request
       content:
@@ -140,6 +139,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error_schema'                     
-
-  
+            $ref: '#/components/schemas/error_schema'

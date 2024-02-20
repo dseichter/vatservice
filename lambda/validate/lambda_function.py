@@ -29,30 +29,30 @@ def return_fielderror(fieldname):
             'body': json.dumps({'errorcode': 'VAT0001', 'message': f"The following field is missing: {fieldname}"}, default=defaultencode)
         }
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): #NOSONAR
     
     print(event)
     payload = json.loads(event['body'])
 
-    if not 'key1' in payload:
+    if 'key1' not in payload:
         return return_fielderror('key1')
-    if not 'key2' in payload:
+    if 'key2' not in payload:
         return return_fielderror('key2')
-    if not 'ownvat' in payload:
+    if 'ownvat' not in payload:
         return return_fielderror('ownvat')
-    if not 'foreignvat' in payload:
+    if 'foreignvat' not in payload:
         return return_fielderror('foreignvat')
-    if not 'company' in payload:
+    if 'company' not in payload:
         return return_fielderror('company')
-    if not 'town' in payload:
+    if 'town' not in payload:
         return return_fielderror('town')
-    if not 'zip' in payload:
+    if 'zip' not in payload:
         return return_fielderror('zip')
-    if not 'street' in payload:
+    if 'street' not in payload:
         return return_fielderror('street')
     
-    if not 'type' in payload:
-        payload['type'] = 'bzst' if payload['ownvat'].upper()[:2] == 'DE' else 'vies'
+    if 'type' not in payload:
+        payload['type'] = 'bzst' if payload['ownvat'].upper().startswith('DE') else 'vies'
 
     # trigger stepfunction
     try:

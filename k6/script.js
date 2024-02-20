@@ -1,6 +1,5 @@
 import http from 'k6/http';
-import exec from 'k6/execution';
-import test from 'k6/execution';
+import {exec} from 'k6/execution';
 
 const bzst_ok = JSON.parse(open('payloads/bzst_ok.json'));
 const hmrc_ok = JSON.parse(open('payloads/hmrc_ok.json'));

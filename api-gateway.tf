@@ -13,6 +13,7 @@ resource "aws_api_gateway_rest_api" "vat_service" {
 resource "aws_api_gateway_domain_name" "vat_erpware_co" {
   domain_name              = "vat.erpware.co"
   regional_certificate_arn = aws_acm_certificate_validation.vat_erpware_co.certificate_arn
+  security_policy          = "TLS_1_2"
 
   endpoint_configuration {
     types = ["REGIONAL"]

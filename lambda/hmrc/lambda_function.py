@@ -51,7 +51,7 @@ def defaultencode(o):
         return o.isoformat()
     raise TypeError(repr(o) + " is not JSON serializable")
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): #NOSONAR
 
     print(event)
     requestfields = event
