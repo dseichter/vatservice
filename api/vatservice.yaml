@@ -35,25 +35,35 @@ components:
       required:
         - ownvat
         - foreignvat
+        - type
       properties:
         key1:
           type: string
+          example: "CU1234"
         key2:
           type: string
+          example: "adr2"
         ownvat:
           type: string
+          example: "DE123456789"
         foreignvat:
           type: string
+          example: "ATU12345678"
         company:
           type: string
+          example: "Example GesmbH"
         town:
           type: string
+          example: "Linz"
         zip:
           type: string
+          example: "1234"
         street:
           type: string
-        validationtype:
+          example: "Neue Straße 1"
+        type:
           type: string
+          example: "vies"
           enum:
             - vies
             - bzst
@@ -63,51 +73,67 @@ components:
       required:
         - ownvat
         - foreignvat
-        - validationtype
+        - type
         - valid
       properties:
         key1:
           type: string
+          example: "CU1234"
         key2:
           type: string
+          example: "adr2"
         ownvat:
           type: string
+          example: "DE123456789"
         foreignvat:
           type: string
-        validationtype:
+          example: "ATU12345678"
+        type:
           type: string
+          example: vies
         valid:
           type: boolean
+          example: true
         errorcode:
           type: string
+          example: 
         errorcode_description:
           type: string
+          example:
         valid_from:
           type: string
+          example:
         valid_to:
           type: string
-        errorcode_hint:
-          type: string
+          example:
         timestamp:
           type: string
+          example: "22.02.2024 20:44:24"
         company:
           type: string
+          example: "Example GesmbH"
         address:
           type: string
+          example: "Neue Straße 1\nAT-1234 Linz"
         town:
           type: string
+          example:
         zip:
           type: string
+          example:
         street:
           type: string
+          example:
 
     error_schema:
       type: object
       properties:
         errorcode:
           type: string
+          example: "VAT1234"
         errormessage:
           type: string
+          example: "Something went wrong during validation."
 
   responses:
     200Ok:

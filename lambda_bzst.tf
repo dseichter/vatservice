@@ -30,7 +30,7 @@ resource "aws_lambda_function" "bzst" {
     variables = {
       DYNAMODB = aws_dynamodb_table.ew_validation_service.id
       URL      = "https://evatr.bff-online.de/evatrRPC"
-      TYPE     = "BZST"
+      TYPE     = "bzst"
     }
   }
 
