@@ -68,6 +68,12 @@ components:
             - vies
             - bzst
             - hmrc
+        lang:
+          type: string
+          example: "en"
+          enum:
+            - de
+            - en
     validate_response:
       type: object
       required:

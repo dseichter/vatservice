@@ -28,9 +28,10 @@ resource "aws_lambda_function" "hmrc" {
 
   environment {
     variables = {
-      DYNAMODB = aws_dynamodb_table.ew_validation_service.id
-      URL      = "https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/"
-      TYPE     = "hmrc"
+      DYNAMODB       = aws_dynamodb_table.ew_validation_service.id
+      DYNAMODB_CODES = aws_dynamodb_table.ew_validation_responsecodes["hmrc"].id
+      URL            = "https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/"
+      TYPE           = "hmrc"
     }
   }
 
@@ -76,7 +77,8 @@ resource "aws_iam_policy" "hmrc" {
           ]
           Effect = "Allow"
           Resource = [
-            aws_dynamodb_table.ew_validation_service.arn
+            aws_dynamodb_table.ew_validation_service.arn,
+            aws_dynamodb_table.ew_validation_responsecodes["hmrc"].arn
           ]
           Sid = "VisualEditor1"
         },

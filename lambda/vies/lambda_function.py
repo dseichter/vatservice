@@ -11,11 +11,13 @@ import json
 http = urllib3.PoolManager()
 
 TABLENAME=os.environ['DYNAMODB']
+TABLENAME_CODES=os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
+codes = dynamodb.Table(TABLENAME_CODES)
 
 validationresult = {
     "key1": None,
@@ -55,6 +57,24 @@ def defaultencode(o):
         return o.isoformat()    
     raise TypeError(repr(o) + " is not JSON serializable")
 
+
+def load_codes(lang, errorcode):
+    if errorcode is None:
+        return None
+
+    response = codes.get_item(Key={
+        'status': errorcode
+        })
+    
+    if 'Item' in response:
+        if 'de' in response['Item'] and lang == 'de':
+            return response['Item']['de']
+        if 'en' in response['Item'] and lang == 'en':
+            return response['Item']['en']
+        
+    return None
+
+
 def lambda_handler(event, context): #NOSONAR
 
     print(event)
@@ -78,28 +98,50 @@ def lambda_handler(event, context): #NOSONAR
         resp = http.request("POST", URL, headers=HEADERS, body=payload)
 
         # example response:
-        # <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Header/><env:Body><ns2:checkVatApproxResponse xmlns:ns2="urn:ec.europa.eu:taxud:vies:services:checkVat:types"><ns2:countryCode>IT</ns2:countryCode><ns2:vatNumber>01739710307</ns2:vatNumber><ns2:requestDate>2024-02-09+01:00</ns2:requestDate><ns2:valid>false</ns2:valid><ns2:traderName></ns2:traderName><ns2:traderCompanyType>---</ns2:traderCompanyType><ns2:traderAddress></ns2:traderAddress><ns2:requestIdentifier></ns2:requestIdentifier></ns2:checkVatApproxResponse></env:Body></env:Envelope>'
+        # <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Header/><env:Body>
+        #  <ns2:checkVatApproxResponse xmlns:ns2="urn:ec.europa.eu:taxud:vies:services:checkVat:types">
+        #    <ns2:countryCode>IT</ns2:countryCode><ns2:vatNumber>01739710307</ns2:vatNumber>
+        #    <ns2:requestDate>2024-02-09+01:00</ns2:requestDate>
+        #    <ns2:valid>false</ns2:valid>
+        #    <ns2:traderName></ns2:traderName>
+        #    <ns2:traderCompanyType>---</ns2:traderCompanyType>
+        #    <ns2:traderAddress></ns2:traderAddress>
+        #    <ns2:requestIdentifier></ns2:requestIdentifier>
+        #  </ns2:checkVatApproxResponse></env:Body></env:Envelope>'
+        # Faultcode
+        # <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"><env:Header/><env:Body>
+        #   <env:Fault>
+        #     <faultcode>env:Server</faultcode>
+        #     <faultstring>MS_UNAVAILABLE</faultstring>
+        # </env:Fault></env:Body></env:Envelope>
         dom = minidom.parseString(resp.data)
+        print(resp.data)
         node = dom.documentElement
 
         result = {}
         try:
             result['traderName'] = node.getElementsByTagName('ns2:traderName')[0].childNodes[0].nodeValue
-        except KeyError as e:
+        except Exception as e:
             result['traderName'] = None
         try:
             result['traderAddress'] = node.getElementsByTagName('ns2:traderAddress')[0].childNodes[0].nodeValue
-        except KeyError as e:
+        except Exception as e:
             result['traderAddress'] = None
         try:
             result['valid'] = node.getElementsByTagName('ns2:valid')[0].childNodes[0].nodeValue
-        except KeyError as e:
+        except Exception as e:
             result['valid'] = None
         try:
             result['requestDate'] = node.getElementsByTagName('ns2:requestDate')[0].childNodes[0].nodeValue
-        except KeyError as e:
+        except Exception as e:
             result['requestDate'] = None
+        # in case of faultcode
+        try:
+            result['errorcode'] = node.getElementsByTagName('faultstring')[0].childNodes[0].nodeValue
+        except Exception as e:
+            result['errorcode'] = None
 
+        print(result)
         # bring result in right format
         validationresult = {
             'key1': '',
@@ -108,8 +150,8 @@ def lambda_handler(event, context): #NOSONAR
             'foreignvat': requestfields['foreignvat'],
             'type': TYPE,
             'valid': result['valid'] == "true",
-            'errorcode': '',
-            'errorcode_description': '',
+            'errorcode': result['errorcode'],
+            'errorcode_description': load_codes(requestfields['lang'], result['errorcode']),
             'valid_from': '',
             'valid_to': '',
             'timestamp': result['requestDate'],

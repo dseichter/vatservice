@@ -11,11 +11,13 @@ import json
 http = urllib3.PoolManager()
 
 TABLENAME=os.environ['DYNAMODB']
+TABLENAME_CODES=os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
+codes = dynamodb.Table(TABLENAME_CODES)
 
 validationresult = {
     "key1": None,
@@ -61,16 +63,42 @@ def gettext(nodelist):
     return ''.join(rc)
 
 
+def load_codes(lang, errorcode):
+    if errorcode is None:
+        return None
+
+    response = codes.get_item(Key={
+        'status': errorcode
+        })
+    
+    if 'Item' in response:
+        if 'de' in response['Item'] and lang == 'de':
+            return response['Item']['de']
+        if 'en' in response['Item'] and lang == 'en':
+            return response['Item']['en']
+        
+    return None
+
+
 def lambda_handler(event, context): #NOSONAR
 
     print(event)
     requestfields = event
     # read the values from the payload
 
+    # map requested fields to bzst request
+    bzstmap = {
+        'UstId_1': requestfields['ownvat'],
+        'UstId_2':requestfields['foreignvat'],
+        'Firmenname':requestfields['company'],
+        'Ort':requestfields['town'],
+        'PLZ':requestfields['zip'],
+        'Strasse':requestfields['street']
+    }
     # check, if there is valid history of the vat
 
     try:
-        resp = http.request("GET", URL, fields=requestfields)
+        resp = http.request("GET", URL, fields=bzstmap)
 
         dom = minidom.parseString(resp.data)
 
@@ -102,7 +130,7 @@ def lambda_handler(event, context): #NOSONAR
             'type': TYPE,
             'valid': rc['ErrorCode'] in ['200', '216'],
             'errorcode': rc['ErrorCode'],
-            'errorcode_description': '',
+            'errorcode_description': load_codes(requestfields['lang'], rc['ErrorCode']),
             'valid_from': rc['Gueltig_ab'],
             'valid_to': rc['Gueltig_bis'],
             'timestamp': rc['Datum'] + ' ' + rc['Uhrzeit'],

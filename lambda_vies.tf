@@ -28,9 +28,10 @@ resource "aws_lambda_function" "vies" {
 
   environment {
     variables = {
-      DYNAMODB = aws_dynamodb_table.ew_validation_service.id
-      URL      = "https://ec.europa.eu/taxation_customs/vies/services/checkVatService"
-      TYPE     = "vies"
+      DYNAMODB       = aws_dynamodb_table.ew_validation_service.id
+      DYNAMODB_CODES = aws_dynamodb_table.ew_validation_responsecodes["vies"].id
+      URL            = "https://ec.europa.eu/taxation_customs/vies/services/checkVatService"
+      TYPE           = "vies"
     }
   }
 
@@ -76,7 +77,8 @@ resource "aws_iam_policy" "vies" {
           ]
           Effect = "Allow"
           Resource = [
-            aws_dynamodb_table.ew_validation_service.arn
+            aws_dynamodb_table.ew_validation_service.arn,
+            aws_dynamodb_table.ew_validation_responsecodes["vies"].arn
           ]
           Sid = "VisualEditor1"
         },

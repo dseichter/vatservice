@@ -53,6 +53,12 @@ def lambda_handler(event, context): #NOSONAR
     
     if 'type' not in payload:
         payload['type'] = 'bzst' if payload['ownvat'].upper().startswith('DE') else 'vies'
+    
+    if 'lang' not in payload:
+        payload['lang'] = 'en'
+
+    if payload['lang'] not in ['en', 'de']:
+        payload['lang'] = 'en'
 
     # trigger stepfunction
     try:

@@ -11,11 +11,13 @@ import json
 http = urllib3.PoolManager()
 
 TABLENAME=os.environ['DYNAMODB']
+TABLENAME_CODES=os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
+codes = dynamodb.Table(TABLENAME_CODES)
 
 validationresult = {
     "key1": None,
@@ -51,6 +53,24 @@ def defaultencode(o):
         return o.isoformat()
     raise TypeError(repr(o) + " is not JSON serializable")
 
+
+def load_codes(lang, errorcode):
+    if errorcode is None:
+        return None
+
+    response = codes.get_item(Key={
+        'status': errorcode
+        })
+    
+    if 'Item' in response:
+        if 'de' in response['Item'] and lang == 'de':
+            return response['Item']['de']
+        if 'en' in response['Item'] and lang == 'en':
+            return response['Item']['en']
+        
+    return None
+
+
 def lambda_handler(event, context): #NOSONAR
 
     print(event)
@@ -66,15 +86,18 @@ def lambda_handler(event, context): #NOSONAR
         # example response:
         # {"target":{"name":"DEUTSCHE BANK AG LONDON","vatNumber":"243609761","address":{"line1":"21 MOORFIELDS","line2":"LONDON","postcode":"EC2Y 9DB","countryCode":"GB"}},"processingDate":"2024-02-09T20:30:07+00:00"}'
         # bring result in right format
+
+        result['errorcode'] = None
+
         validationresult = {
             'key1': '',
             'key2': '',
             'ownvat': requestfields['ownvat'],
             'foreignvat': requestfields['foreignvat'],
             'type': TYPE,
-            'valid': resp.status == '200',
-            'errorcode': '',
-            'errorcode_description': '',
+            'valid': resp.status == 200,
+            'errorcode': result['errorcode'],
+            'errorcode_description': load_codes(requestfields['lang'], result['errorcode']),
             'valid_from': '',
             'valid_to': '',
             'timestamp': result['processingDate'],

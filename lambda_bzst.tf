@@ -28,9 +28,10 @@ resource "aws_lambda_function" "bzst" {
 
   environment {
     variables = {
-      DYNAMODB = aws_dynamodb_table.ew_validation_service.id
-      URL      = "https://evatr.bff-online.de/evatrRPC"
-      TYPE     = "bzst"
+      DYNAMODB       = aws_dynamodb_table.ew_validation_service.id
+      DYNAMODB_CODES = aws_dynamodb_table.ew_validation_responsecodes["bzst"].id
+      URL            = "https://evatr.bff-online.de/evatrRPC"
+      TYPE           = "bzst"
     }
   }
 
@@ -76,7 +77,8 @@ resource "aws_iam_policy" "bzst" {
           ]
           Effect = "Allow"
           Resource = [
-            aws_dynamodb_table.ew_validation_service.arn
+            aws_dynamodb_table.ew_validation_service.arn,
+            aws_dynamodb_table.ew_validation_responsecodes["bzst"].arn
           ]
           Sid = "VisualEditor1"
         },
