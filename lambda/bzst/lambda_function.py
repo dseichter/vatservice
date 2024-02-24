@@ -80,6 +80,35 @@ def load_codes(lang, errorcode):
     return None
 
 
+def save_validation(result):
+    today = datetime.date.today()
+    try:
+       print('before db')
+       response = table.update_item(
+            Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
+                    UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
+                    ExpressionAttributeValues={":validationtimestamp": result['timestamp'],
+                                            ":checktype": result['type'],
+                                            ":valid": result['valid'],
+                                            ":errorcode": result['errorcode'],
+                                            ":valid_from": result['valid_from'],
+                                            ":valid_to": result['valid_to'],
+                                            ":company": result['company'],
+                                            ":address": result['address'],
+                                            ":town": result['town'],
+                                            ":zip":  result['zip'],
+                                            ":street": result['street']
+                                            },
+                    ReturnValues="UPDATED_NEW", 
+            )
+       print('after db')
+    except Exception as e:
+            print(repr(e))
+            return False
+    
+    return True
+
+
 def lambda_handler(event, context): #NOSONAR
 
     print(event)
@@ -123,8 +152,8 @@ def lambda_handler(event, context): #NOSONAR
                             rc[newkey]= newvalue
 
         validationresult = {
-            'key1': '',
-            'key2': '',
+            'key1': requestfields['key1'],
+            'key2': requestfields['key2'],
             'ownvat': requestfields['ownvat'],
             'foreignvat': requestfields['foreignvat'],
             'type': TYPE,
@@ -133,15 +162,18 @@ def lambda_handler(event, context): #NOSONAR
             'errorcode_description': load_codes(requestfields['lang'], rc['ErrorCode']),
             'valid_from': rc['Gueltig_ab'],
             'valid_to': rc['Gueltig_bis'],
-            'timestamp': rc['Datum'] + ' ' + rc['Uhrzeit'],
+            'timestamp': datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             'company': rc['Firmenname'],
             'address': '',
             'town': rc['Ort'],
-            'zip':  rc['ErrorCode'],
+            'zip':  rc['PLZ'],
             'street': rc['Strasse']
         }
 
-        # store result back in DynamoDB
+        # save only, if response itself is valid
+        if resp.status == 200:
+            save_validation(validationresult)
+
         return validationresult
     except Exception as e:
         return {'vatError': 'VAT3500', 'vatErrorMessage': repr(e)}

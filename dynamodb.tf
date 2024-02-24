@@ -1,6 +1,7 @@
 resource "aws_dynamodb_table" "ew_validation_service" {
   billing_mode                = "PAY_PER_REQUEST"
   hash_key                    = "vat"
+  range_key                   = "date"
   name                        = "ew_validation_service"
   read_capacity               = 0
   stream_enabled              = false
@@ -12,6 +13,11 @@ resource "aws_dynamodb_table" "ew_validation_service" {
     type = "S"
   }
 
+   attribute {
+    name = "date"
+    type = "S"
+  }
+
   point_in_time_recovery {
     enabled = true
   }
@@ -19,7 +25,7 @@ resource "aws_dynamodb_table" "ew_validation_service" {
   timeouts {}
 
   lifecycle {
-    prevent_destroy = true
+    #prevent_destroy = true
     ignore_changes = [
       read_capacity,
       write_capacity
