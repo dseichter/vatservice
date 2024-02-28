@@ -1,36 +1,41 @@
 import boto3
-from boto3.dynamodb.conditions import Attr
 import json
 import datetime
 from decimal import Decimal
 import os
 
-STEPFUNCTION=os.environ['STEPFUNCTION']
+STEPFUNCTION = os.environ['STEPFUNCTION']
 
-sf = boto3.client('stepfunctions', region_name = 'eu-central-1')
+sf = boto3.client('stepfunctions', region_name='eu-central-1')
+
 
 class fakefloat(float):
     def __init__(self, value):
         self._value = value
+
     def __repr__(self):
         return str(self._value)
+
 
 def defaultencode(o):
     if isinstance(o, Decimal):
         # Subclass float with custom repr?
         return fakefloat(o)
     if isinstance(o, (datetime.datetime, datetime.date)):
-        return o.isoformat()    
+        return o.isoformat()
     raise TypeError(repr(o) + " is not JSON serializable")
+
 
 def return_fielderror(fieldname):
     return {
-            'statusCode': 406,
-            'body': json.dumps({'errorcode': 'VAT0001', 'message': f"The following field is missing: {fieldname}"}, default=defaultencode)
-        }
+        'statusCode': 406,
+        'body': json.dumps({'errorcode': 'VAT0001', 'message': f"The following field is missing: {fieldname}"},
+                           default=defaultencode)
+    }
 
-def lambda_handler(event, context): #NOSONAR
-    
+
+def lambda_handler(event, context):  # NOSONAR
+
     print(event)
     payload = json.loads(event['body'])
 
@@ -50,10 +55,10 @@ def lambda_handler(event, context): #NOSONAR
         return return_fielderror('zip')
     if 'street' not in payload:
         return return_fielderror('street')
-    
+
     if 'type' not in payload:
         payload['type'] = 'bzst' if payload['ownvat'].upper().startswith('DE') else 'vies'
-    
+
     if 'lang' not in payload:
         payload['lang'] = 'en'
 
@@ -63,9 +68,9 @@ def lambda_handler(event, context): #NOSONAR
     # trigger stepfunction
     try:
         response = sf.start_sync_execution(
-            stateMachineArn = STEPFUNCTION,
+            stateMachineArn=STEPFUNCTION,
             name=payload['foreignvat'],
-            input = json.dumps(payload)
+            input=json.dumps(payload)
         )
         print(response)
         if response['status'] == 'SUCCEEDED' and 'output' in response:
@@ -79,15 +84,15 @@ def lambda_handler(event, context): #NOSONAR
                 return {
                     'statusCode': 500,
                     'body': response['output']
-                } 
+                }
         else:
             return {
                 'statusCode': 400,
-                'body': json.dumps({'errorcode':'EW400', 'errormessage': response})
+                'body': json.dumps({'errorcode': 'EW400', 'errormessage': response})
             }
     except Exception as e:
         print(repr(e))
         return {
             'statusCode': 500,
-            'body': json.dumps({'errorcode':'EW500', 'errormessage': repr(e)}, default=defaultencode)
+            'body': json.dumps({'errorcode': 'EW500', 'errormessage': repr(e)}, default=defaultencode)
         }

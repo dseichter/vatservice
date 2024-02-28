@@ -4,7 +4,6 @@ url = 'https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup
 # https://api.service.hmrc.gov.uk/organisations/vat/check-vat-number/lookup/1234567890
 
 import urllib3
-from xml.dom import minidom
 import json
 
 http = urllib3.PoolManager()

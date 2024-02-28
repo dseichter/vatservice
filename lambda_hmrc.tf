@@ -16,7 +16,7 @@ resource "aws_lambda_function" "hmrc" {
   layers                         = []
   memory_size                    = 128
   reserved_concurrent_executions = -1
-  timeout                        = 10
+  timeout                        = 3
 
   filename         = data.archive_file.hmrc.output_path
   source_code_hash = data.archive_file.hmrc.output_base64sha256

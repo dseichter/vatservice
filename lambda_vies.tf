@@ -16,7 +16,7 @@ resource "aws_lambda_function" "vies" {
   layers                         = []
   memory_size                    = 128
   reserved_concurrent_executions = -1
-  timeout                        = 10
+  timeout                        = 3
 
   filename         = data.archive_file.vies.output_path
   source_code_hash = data.archive_file.vies.output_base64sha256

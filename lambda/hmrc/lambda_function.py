@@ -1,17 +1,14 @@
 import boto3
-from boto3.dynamodb.conditions import Attr
-import json
 import datetime
 from decimal import Decimal
 import os
 import urllib3
-from xml.dom import minidom
 import json
 
 http = urllib3.PoolManager()
 
-TABLENAME=os.environ['DYNAMODB']
-TABLENAME_CODES=os.environ['DYNAMODB_CODES']
+TABLENAME = os.environ['DYNAMODB']
+TABLENAME_CODES = os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
 
@@ -39,11 +36,14 @@ validationresult = {
     "street": None
 }
 
+
 class fakefloat(float):
     def __init__(self, value):
         self._value = value
+
     def __repr__(self):
         return str(self._value)
+
 
 def defaultencode(o):
     if isinstance(o, Decimal):
@@ -60,45 +60,45 @@ def load_codes(lang, errorcode):
 
     response = codes.get_item(Key={
         'status': errorcode
-        })
-    
+    })
+
     if 'Item' in response:
         if 'de' in response['Item'] and lang == 'de':
             return response['Item']['de']
         if 'en' in response['Item'] and lang == 'en':
             return response['Item']['en']
-        
+
     return None
 
 
 def save_validation(result):
     today = datetime.date.today()
     try:
-       response = table.update_item(
+        response = table.update_item(
             Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
-                    UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
-                    ExpressionAttributeValues={":validationtimestamp": result['timestamp'],
-                                            ":checktype": result['type'],
-                                            ":valid": result['valid'],
-                                            ":errorcode": result['errorcode'],
-                                            ":valid_from": result['valid_from'],
-                                            ":valid_to": result['valid_to'],
-                                            ":company": result['company'],
-                                            ":address": result['address'],
-                                            ":town": result['town'],
-                                            ":zip":  result['zip'],
-                                            ":street": result['street']
-                                            },
-                    ReturnValues="UPDATED_NEW", 
-            )
+            UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
+            ExpressionAttributeValues={":validationtimestamp": result['timestamp'],
+                                       ":checktype": result['type'],
+                                       ":valid": result['valid'],
+                                       ":errorcode": result['errorcode'],
+                                       ":valid_from": result['valid_from'],
+                                       ":valid_to": result['valid_to'],
+                                       ":company": result['company'],
+                                       ":address": result['address'],
+                                       ":town": result['town'],
+                                       ":zip": result['zip'],
+                                       ":street": result['street']
+                                       },
+            ReturnValues="UPDATED_NEW",
+        )
     except Exception as e:
-            print(repr(e))
-            return False
-    
+        print(repr(e))
+        return False
+
     return True
 
 
-def lambda_handler(event, context): #NOSONAR
+def lambda_handler(event, context):  # NOSONAR
 
     print(event)
     requestfields = event
@@ -131,7 +131,7 @@ def lambda_handler(event, context): #NOSONAR
             'company': result['target']['name'],
             'address': result['target']['address']['line1'] + chr(13) + result['target']['address']['line2'],
             'town': '',
-            'zip':  result['target']['address']['postcode'],
+            'zip': result['target']['address']['postcode'],
             'street': ''
         }
 
