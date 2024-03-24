@@ -87,7 +87,19 @@ def save_validation(result):
     try:
         response = table.update_item(
             Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
-            UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
+            UpdateExpression="""
+            set validationtimestamp=:validationtimestamp,
+                checktype=:checktype,
+                valid=:valid,
+                errorcode=:errorcode,
+                valid_from=:valid_from,
+                valid_to=:valid_to,
+                company=:company,
+                address=:address,
+                town=:town,
+                zip=:zip,
+                street=:street
+            """,
             ExpressionAttributeValues={":validationtimestamp": result['timestamp'],
                                        ":checktype": result['type'],
                                        ":valid": result['valid'],
@@ -122,7 +134,16 @@ def lambda_handler(event, context):  # NOSONAR
         print(resp.status, resp.data)
         result = json.loads(resp.data)
         # example response:
-        # {"target":{"name":"DEUTSCHE BANK AG LONDON","vatNumber":"243609761","address":{"line1":"21 MOORFIELDS","line2":"LONDON","postcode":"EC2Y 9DB","countryCode":"GB"}},"processingDate":"2024-02-09T20:30:07+00:00"}'
+        # {"target":{
+        # "name":"DEUTSCHE BANK AG LONDON",
+        # "vatNumber":"243609761",
+        # "address":{
+        # "line1":"21 MOORFIELDS",
+        # "line2":"LONDON",
+        # "postcode":"EC2Y 9DB",
+        # "countryCode":"GB"}
+        # },
+        # "processingDate":"2024-02-09T20:30:07+00:00"}'
         # bring result in right format
 
         result['errorcode'] = None

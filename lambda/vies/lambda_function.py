@@ -91,7 +91,19 @@ def save_validation(result):
     try:
         response = table.update_item(
             Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
-            UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
+            UpdateExpression="""
+            set validationtimestamp=:validationtimestamp,
+                checktype=:checktype,
+                valid=:valid,
+                errorcode=:errorcode,
+                valid_from=:valid_from,
+                valid_to=:valid_to,
+                company=:company,
+                address=:address,
+                town=:town,
+                zip=:zip,
+                street=:street
+            """,
             ExpressionAttributeValues={":validationtimestamp": result['timestamp'],
                                        ":checktype": result['type'],
                                        ":valid": result['valid'],
