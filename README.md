@@ -2,4 +2,3 @@
 
 ![pep8](https://github.com/erpware/vat-service/actions/workflows/pep8/badge.svg)
 ![tflint](https://github.com/erpware/vat-service/actions/workflows/tflint/badge.svg)
-![tfsec](https://github.com/erpware/vat-service/actions/workflows/tfsec/badge.svg)
