@@ -8,8 +8,8 @@ on:
       - '*'
 
 jobs:
-  tflint:
-    name: 'TFLint'
+  tfsec:
+    name: 'TFSec'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
