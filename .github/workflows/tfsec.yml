@@ -14,11 +14,6 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
-
-      - uses: terraform-linters/setup-tflint@v2
-        name: Setup TFLint
-        with:
-          github_token: ${{ secrets.github_token }}
       
-      - name: Run TFLint
-        run: tflint -f compact --recursive           
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0         
