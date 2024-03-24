@@ -17,6 +17,11 @@ jobs:
 
       - name: 'tfsec'
         uses: triat/terraform-security-scan@v3.1.0
-        # add result to annotations
         with:
-          output: 'annotations'
+            tfsec_output_format: 'sarif'
+            tfsec_output_file: tfsec.sarif
+
+      - name: 'Upload SARIF file'
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: tfsec.sarif
