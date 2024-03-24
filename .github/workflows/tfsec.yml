@@ -1,4 +1,4 @@
-name: 'Terraform Lint'
+name: 'Terraform TFSec'
 on:
   push:
     branches:
