@@ -21,6 +21,10 @@ jobs:
             tfsec_output_format: 'sarif'
             tfsec_output_file: tfsec.sarif
 
+      # upload sarif file
+      
+
+
       - name: 'Upload SARIF file'
         uses: github/codeql-action/upload-sarif@v1
         with:
