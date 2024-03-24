@@ -1,1 +1,0 @@
-C:\Software\sonar-scanner-5.0.1.3006-windows\bin\sonar-scanner.bat -D"sonar.projectKey=vatservice" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=sqp_65fd738e01ddf823a67640220f89851e2018704f" -D"sonar.python.version=3" -Dsonar.exclusions="test_scripts/*"
