@@ -4,13 +4,24 @@ from decimal import Decimal
 import os
 import urllib3
 from xml.dom import minidom
+import logging
 
+logger = logging.getLogger()
 http = urllib3.PoolManager()
 
 TABLENAME = os.environ['DYNAMODB']
 TABLENAME_CODES = os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
+# get loglevel from environment
+if 'LOGLEVEL' in os.environ:
+    loglevel = os.environ['LOGLEVEL']
+    if loglevel == 'DEBUG':
+        logger.setLevel(logging.DEBUG)
+    if loglevel == 'INFO':
+        logger.setLevel(logging.INFO)
+    if loglevel == 'ERROR':
+        logger.setLevel(logging.ERROR)
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
@@ -96,7 +107,7 @@ def save_validation(result):
             ReturnValues="UPDATED_NEW",
         )
     except Exception as e:
-        print(repr(e))
+        logger.error(repr(e))
         return False
 
     return True
@@ -104,7 +115,7 @@ def save_validation(result):
 
 def lambda_handler(event, context):  # NOSONAR
 
-    print(event)
+    logger.debug(event)
     requestfields = event
     # read the values from the payload
 
@@ -142,7 +153,7 @@ def lambda_handler(event, context):  # NOSONAR
         #     <faultstring>MS_UNAVAILABLE</faultstring>
         # </env:Fault></env:Body></env:Envelope>
         dom = minidom.parseString(resp.data)
-        print(resp.data)
+        logger.debug(resp.data)
         node = dom.documentElement
 
         result = {}
@@ -168,7 +179,7 @@ def lambda_handler(event, context):  # NOSONAR
         except Exception as e:
             result['errorcode'] = None
 
-        print(result)
+        logger.debug(result)
         # bring result in right format
         validationresult = {
             'key1': requestfields['key1'],
@@ -195,4 +206,5 @@ def lambda_handler(event, context):  # NOSONAR
 
         return validationresult
     except Exception as e:
+        logger.error(repr(e))
         return {'vatError': 'VAT1500', 'vatErrorMessage': repr(e)}

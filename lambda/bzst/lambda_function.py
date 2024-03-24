@@ -3,13 +3,25 @@ import datetime
 import os
 import urllib3
 from xml.dom import minidom
+import logging
 
+logger = logging.getLogger()
 http = urllib3.PoolManager()
 
 TABLENAME = os.environ['DYNAMODB']
 TABLENAME_CODES = os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
+
+# get loglevel from environment
+if 'LOGLEVEL' in os.environ:
+    loglevel = os.environ['LOGLEVEL']
+    if loglevel == 'DEBUG':
+        logger.setLevel(logging.DEBUG)
+    if loglevel == 'INFO':
+        logger.setLevel(logging.INFO)
+    if loglevel == 'ERROR':
+        logger.setLevel(logging.ERROR)
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
@@ -64,7 +76,7 @@ def load_codes(lang, errorcode):
 def save_validation(result):
     today = datetime.date.today()
     try:
-        print('before db')
+        logger.debug('before db')
         response = table.update_item(
             Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
             UpdateExpression="set validationtimestamp=:validationtimestamp, checktype=:checktype, valid=:valid, errorcode=:errorcode,valid_from=:valid_from, valid_to=:valid_to, company=:company, address=:address,town=:town, zip=:zip, street=:street ",
@@ -82,9 +94,9 @@ def save_validation(result):
                                        },
             ReturnValues="UPDATED_NEW",
         )
-        print('after db')
+        logger.debug('after db')
     except Exception as e:
-        print(repr(e))
+        logger.error(repr(e))
         return False
 
     return True
@@ -92,7 +104,7 @@ def save_validation(result):
 
 def lambda_handler(event, context):  # NOSONAR
 
-    print(event)
+    logger.debug(event)
     requestfields = event
     # read the values from the payload
 
@@ -157,4 +169,5 @@ def lambda_handler(event, context):  # NOSONAR
 
         return validationresult
     except Exception as e:
+        logger.error(repr(e))
         return {'vatError': 'VAT3500', 'vatErrorMessage': repr(e)}

@@ -3,9 +3,21 @@ import json
 import datetime
 from decimal import Decimal
 import os
+import logging
+
+logger = logging.getLogger()
 
 STEPFUNCTION = os.environ['STEPFUNCTION']
-
+# get loglevel from environment
+if 'LOGLEVEL' in os.environ:
+    loglevel = os.environ['LOGLEVEL']
+    if loglevel == 'DEBUG':
+        logger.setLevel(logging.DEBUG)
+    if loglevel == 'INFO':
+        logger.setLevel(logging.INFO)
+    if loglevel == 'ERROR':
+        logger.setLevel(logging.ERROR)
+        
 sf = boto3.client('stepfunctions', region_name='eu-central-1')
 
 
@@ -36,7 +48,7 @@ def return_fielderror(fieldname):
 
 def lambda_handler(event, context):  # NOSONAR
 
-    print(event)
+    logger.debug(event)
     payload = json.loads(event['body'])
 
     if 'key1' not in payload:
@@ -72,7 +84,7 @@ def lambda_handler(event, context):  # NOSONAR
             name=payload['foreignvat'],
             input=json.dumps(payload)
         )
-        print(response)
+        logger.debug(response)
         if response['status'] == 'SUCCEEDED' and 'output' in response:
             result = json.loads(response['output'])
             if 'vatError' not in result:
@@ -91,7 +103,7 @@ def lambda_handler(event, context):  # NOSONAR
                 'body': json.dumps({'errorcode': 'EW400', 'errormessage': response})
             }
     except Exception as e:
-        print(repr(e))
+        logger.error(repr(e))
         return {
             'statusCode': 500,
             'body': json.dumps({'errorcode': 'EW500', 'errormessage': repr(e)}, default=defaultencode)

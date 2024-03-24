@@ -4,13 +4,24 @@ from decimal import Decimal
 import os
 import urllib3
 import json
+import logging
 
+logger = logging.getLogger()
 http = urllib3.PoolManager()
 
 TABLENAME = os.environ['DYNAMODB']
 TABLENAME_CODES = os.environ['DYNAMODB_CODES']
 URL = os.environ['URL']
 TYPE = os.environ['TYPE']
+# get loglevel from environment
+if 'LOGLEVEL' in os.environ:
+    loglevel = os.environ['LOGLEVEL']
+    if loglevel == 'DEBUG':
+        logger.setLevel(logging.DEBUG)
+    if loglevel == 'INFO':
+        logger.setLevel(logging.INFO)
+    if loglevel == 'ERROR':
+        logger.setLevel(logging.ERROR)
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(TABLENAME)
@@ -92,7 +103,7 @@ def save_validation(result):
             ReturnValues="UPDATED_NEW",
         )
     except Exception as e:
-        print(repr(e))
+        logger.error(repr(e))
         return False
 
     return True
@@ -100,7 +111,7 @@ def save_validation(result):
 
 def lambda_handler(event, context):  # NOSONAR
 
-    print(event)
+    logger.debug(event)
     requestfields = event
     # read the values from the payload
 
@@ -141,4 +152,5 @@ def lambda_handler(event, context):  # NOSONAR
 
         return validationresult
     except Exception as e:
+        logger.error(repr(e))
         return {'vatError': 'VAT2500', 'vatErrorMessage': repr(e)}
