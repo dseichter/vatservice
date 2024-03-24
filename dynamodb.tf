@@ -13,7 +13,7 @@ resource "aws_dynamodb_table" "ew_validation_service" {
     type = "S"
   }
 
-   attribute {
+  attribute {
     name = "date"
     type = "S"
   }
