@@ -121,16 +121,26 @@ def lambda_handler(event, context):  # NOSONAR
 
     # check, if there is valid history of the vat
 
-    payload = f"""<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">
-                <Body xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">
-                  <checkVatApprox xmlns=\"urn:ec.europa.eu:taxud:vies:services:checkVat:types\">
-                     <countryCode>{requestfields['foreignvat'][:2]}</countryCode>
-                     <vatNumber>{requestfields['foreignvat'][2:]}</vatNumber>
-                     <requesterCountryCode>{requestfields['ownvat'][:2]}</requesterCountryCode>
-                     <requesterVatNumber>{requestfields['ownvat'][2:]}</requesterVatNumber>
-                  </checkVatApprox>
-                </Body>
-               </Envelope>"""
+    # optimize the request
+
+    foreign_vat = requestfields['foreignvat']
+    own_vat = requestfields['ownvat']
+
+    foreign_country_code = foreign_vat[:2]
+    foreign_vat_number = foreign_vat[2:]
+    own_country_code = own_vat[:2]
+    own_vat_number = own_vat[2:]
+
+    payload = f"""<Envelope xmlns='http://schemas.xmlsoap.org/soap/envelope/'>
+                    <Body xmlns='http://schemas.xmlsoap.org/soap/envelope/'>
+                    <checkVatApprox xmlns='urn:ec.europa.eu:taxud:vies:services:checkVat:types'>
+                        <countryCode>{foreign_country_code}</countryCode>
+                        <vatNumber>{foreign_vat_number}</vatNumber>
+                        <requesterCountryCode>{own_country_code}</requesterCountryCode>
+                        <requesterVatNumber>{own_vat_number}</requesterVatNumber>
+                    </checkVatApprox>
+                    </Body>
+                </Envelope>"""
 
     try:
         resp = http.request("POST", URL, headers=HEADERS, body=payload)

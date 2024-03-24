@@ -17,7 +17,7 @@ if 'LOGLEVEL' in os.environ:
         logger.setLevel(logging.INFO)
     if loglevel == 'ERROR':
         logger.setLevel(logging.ERROR)
-        
+
 sf = boto3.client('stepfunctions', region_name='eu-central-1')
 
 
