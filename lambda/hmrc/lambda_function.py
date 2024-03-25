@@ -139,7 +139,6 @@ def lambda_handler(event, context):  # NOSONAR
         logger.debug(resp.status, resp.data)
         result = json.loads(resp.data)
 
-
         result['errorcode'] = None
 
         validationresult = {
