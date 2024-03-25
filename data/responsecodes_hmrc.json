@@ -1,0 +1,34 @@
+{
+    "valid": {
+        "de": "gültig",
+        "en": "valid"
+    },
+    "invalid": {
+        "de": "ungültig",
+        "en": "invalid"
+    },
+    "town": {
+        "de": "Ort",
+        "en": "Town"
+    },
+    "zip": {
+        "de": "Postleitzahl",
+        "en": "Postalcode"
+    },
+    "name": {
+        "de": "Firma",
+        "en": "Company"
+    },
+    "TIMEOUT": {
+        "de": "Die Anwendung hat innerhalb der vorgegebenen Zeitspanne keine Antwort erhalten, versuchen Sie es später noch einmal.",
+        "en": "The application did not receive a reply within the allocated time period, try again later"
+    },
+    "true": {
+        "de": "gültig",
+        "en": "valid"
+    },
+    "false": {
+        "de": "ungültig",
+        "en": "invalid"
+    }
+}

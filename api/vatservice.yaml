@@ -1,0 +1,174 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://api.vatservice.net
+
+
+paths:
+  /v1/validate:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/validate_request'
+      responses:
+        '200':
+          description: Ok
+          $ref: '#/components/responses/200Ok'
+        '400':
+          $ref: '#/components/responses/400Error'
+        '429':
+          $ref: '#/components/responses/429Error'
+        '500':
+          $ref: '#/components/responses/500Error'
+        '504':
+          $ref: '#/components/responses/504Error'
+
+components:
+  schemas:
+    validate_request:
+      type: object
+      required:
+        - ownvat
+        - foreignvat
+        - type
+      properties:
+        key1:
+          type: string
+          example: "CU1234"
+        key2:
+          type: string
+          example: "adr2"
+        ownvat:
+          type: string
+          example: "DE123456789"
+        foreignvat:
+          type: string
+          example: "ATU12345678"
+        company:
+          type: string
+          example: "Example GesmbH"
+        town:
+          type: string
+          example: "Linz"
+        zip:
+          type: string
+          example: "1234"
+        street:
+          type: string
+          example: "Neue Straße 1"
+        type:
+          type: string
+          example: "vies"
+          enum:
+            - vies
+            - bzst
+            - hmrc
+        lang:
+          type: string
+          example: "en"
+          enum:
+            - de
+            - en
+    validate_response:
+      type: object
+      required:
+        - ownvat
+        - foreignvat
+        - type
+        - valid
+      properties:
+        key1:
+          type: string
+          example: "CU1234"
+        key2:
+          type: string
+          example: "adr2"
+        ownvat:
+          type: string
+          example: "DE123456789"
+        foreignvat:
+          type: string
+          example: "ATU12345678"
+        type:
+          type: string
+          example: vies
+        valid:
+          type: boolean
+          example: true
+        errorcode:
+          type: string
+          example: 
+        errorcode_description:
+          type: string
+          example:
+        valid_from:
+          type: string
+          example:
+        valid_to:
+          type: string
+          example:
+        timestamp:
+          type: string
+          example: "22.02.2024 20:44:24"
+        company:
+          type: string
+          example: "Example GesmbH"
+        address:
+          type: string
+          example: "Neue Straße 1\nAT-1234 Linz"
+        town:
+          type: string
+          example:
+        zip:
+          type: string
+          example:
+        street:
+          type: string
+          example:
+
+    error_schema:
+      type: object
+      properties:
+        errorcode:
+          type: string
+          example: "VAT1234"
+        errormessage:
+          type: string
+          example: "Something went wrong during validation."
+
+  responses:
+    200Ok:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/validate_response'
+    400Error:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'
+    429Error:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'
+    500Error:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'
+    504Error:
+      description: Gateway timeout
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error_schema'
