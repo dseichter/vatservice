@@ -1,12 +1,14 @@
 # VATService
 
-Service to validate VAT numbers against BZSt, VIES or HMRC.
+Service to validate VAT numbers against BZSt, VIES or HMRC. 
+
+Looking for an GUI? Checkout [vatservice-gui](https://github.com/dseichter/vatservice-gui) for single or batch validation using CSV, XLSX or JSON.
 
 ## Badges
 
 ![pep8](https://github.com/dseichter/vatservice/actions/workflows/pep8.yml/badge.svg)
 ![tflint](https://github.com/dseichter/vatservice/actions/workflows/tflint.yml/badge.svg)
-![tfsec](https://github.com/dseichter/vatservice/actions/workflows/trivy.yml/badge.svg)
+![trivy](https://github.com/dseichter/vatservice/actions/workflows/trivy.yml/badge.svg)
 
 
 ### Prerequisites
