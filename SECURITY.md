@@ -4,7 +4,7 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| master  | :white_check_mark: |
+| main    | :white_check_mark: |
 
 At this time, there is no released version yet.
 
