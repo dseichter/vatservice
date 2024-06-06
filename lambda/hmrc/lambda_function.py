@@ -87,7 +87,7 @@ def save_validation(result, rawdata=None):
     today = datetime.date.today()
     try:
         logger.debug('before db')
-        response = table.update_item(
+        table.update_item(
             Key={"vat": result['foreignvat'], "date": today.strftime("%Y-%m-%d") + "|" + result['type']},
             UpdateExpression="""
             set validationtimestamp=:validationtimestamp,

@@ -85,7 +85,6 @@ def lambda_handler(event, context):  # NOSONAR
             input=json.dumps(payload)
         )
         logger.debug(response)
-        print(response)
         if response['status'] == 'SUCCEEDED' and 'output' in response:
             result = json.loads(response['output'])
             if 'vatError' not in result:
