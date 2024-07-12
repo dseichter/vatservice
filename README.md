@@ -4,12 +4,12 @@ Service to validate VAT numbers against BZSt, VIES or HMRC.
 
 Looking for an GUI? Checkout [vatservice-gui](https://github.com/dseichter/vatservice-gui) for single or batch validation using CSV, XLSX or JSON.
 
-## Badges
-
 ![pep8](https://github.com/dseichter/vatservice/actions/workflows/pep8.yml/badge.svg)
 ![tflint](https://github.com/dseichter/vatservice/actions/workflows/tflint.yml/badge.svg)
 ![trivy](https://github.com/dseichter/vatservice/actions/workflows/trivy.yml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dseichter_vatservice&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dseichter_vatservice)
 
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=dseichter_vatservice)
 
 ### Prerequisites
 
