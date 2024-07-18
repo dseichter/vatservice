@@ -2,6 +2,9 @@ openapi: '3.0.2'
 info:
   title: API Title
   version: '1.0'
+  license:
+    name: GNU General Public License v3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.html
 servers:
   - url: https://api.vatservice.net
 
